@@ -177,4 +177,4 @@ Para produção: `npm run build && npm start`
 
 - O status é **calculado em tempo real** ao listar reservas; o `cancelado` é um estado terminal escolhido pelo usuário.
 - O endpoint `/api/reservas/sincronizar` força a persistência do status atual (útil para relatórios).
-- Logs simples são impressos no console do backend para cada criação, atualização e cancelamento.
+- Logs simples são impressos no console do backend para cada criação, atualização e cancelamento
