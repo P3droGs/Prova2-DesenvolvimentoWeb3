@@ -1,5 +1,5 @@
 // =====================================================
-//  Bistrô das Mesas — UI
+//  McKingReservas — UI
 // =====================================================
 
 const $ = (sel) => document.querySelector(sel);
@@ -97,9 +97,9 @@ function desenharMapa() {
     el.className = `mesa ${m.situacao}`;
     el.innerHTML = `
       <span class="indicador"></span>
-      <span class="numero">${m.numero}</span>
-      <span class="cap">${m.capacidade} lugares</span>
-      <span class="loc">${m.localizacao}</span>
+      <span class="numero">${Number(m.numero)}</span>
+      <span class="cap">${Number(m.capacidade)} lugares</span>
+      <span class="loc">${escapar(m.localizacao)}</span>
     `;
     el.addEventListener('click', () => abrirDetalheMesa(m));
     cont.appendChild(el);
@@ -111,17 +111,17 @@ function abrirDetalheMesa(mesa) {
   const corpo = $('#modalCorpo');
   let html = `
     <div class="detalhe-mesa">
-      <h3>Mesa ${mesa.numero}</h3>
-      <div class="linha-info"><span>Capacidade</span><span>${mesa.capacidade} pessoas</span></div>
-      <div class="linha-info"><span>Localização</span><span>${mesa.localizacao}</span></div>
-      <div class="linha-info"><span>Situação</span><span><span class="bola ${corPorSituacao(mesa.situacao)}"></span>${mesa.situacao}</span></div>
+      <h3>Mesa ${Number(mesa.numero)}</h3>
+      <div class="linha-info"><span>Capacidade</span><span>${Number(mesa.capacidade)} pessoas</span></div>
+      <div class="linha-info"><span>Localização</span><span>${escapar(mesa.localizacao)}</span></div>
+      <div class="linha-info"><span>Situação</span><span><span class="bola ${corPorSituacao(mesa.situacao)}"></span>${escapar(mesa.situacao)}</span></div>
   `;
 
   if (mesa.reservaAtiva) {
     const r = mesa.reservaAtiva;
     html += `
       <div class="reserva-resumo">
-        <strong>Ocupada por:</strong> ${r.nomeCliente} (${r.quantidadePessoas} pessoas)<br>
+        <strong>Ocupada por:</strong> ${escapar(r.nomeCliente)} (${Number(r.quantidadePessoas)} pessoas)<br>
         <strong>Desde:</strong> ${formatarDataHora(r.dataHora)} • ${rotuloDuracao(r.duracaoMinutos)}
       </div>
     `;
@@ -129,7 +129,7 @@ function abrirDetalheMesa(mesa) {
     const r = mesa.proximaReserva;
     html += `
       <div class="reserva-resumo">
-        <strong>Próxima reserva:</strong> ${r.nomeCliente}<br>
+        <strong>Próxima reserva:</strong> ${escapar(r.nomeCliente)}<br>
         <strong>Em:</strong> ${formatarDataHora(r.dataHora)} • ${rotuloDuracao(r.duracaoMinutos)}
       </div>
     `;

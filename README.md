@@ -1,4 +1,4 @@
-# MkReservas — Sistema de Reservas
+# McKingReservas — Sistema de Reservas
 
 Sistema de reservas de mesas para restaurante desenvolvido em **TypeScript + Express + MongoDB (Mongoose)** com front-end em HTML/CSS/JS, incluindo **mapa visual interativo** das mesas.
 
@@ -87,12 +87,18 @@ Prova/
 npm install
 ```
 
-### 3. Popular o banco com as mesas iniciais
+### 3. (Opcional) Copiar o `.env.example` para `.env`
+Os defaults funcionam direto; só ajuste se for usar Mongo remoto ou outra porta.
+```bash
+cp .env.example .env
+```
+
+### 4. Popular o banco com as mesas iniciais
 ```bash
 npm run seed
 ```
 
-### 4. Subir o servidor em modo de desenvolvimento
+### 5. Subir o servidor em modo de desenvolvimento
 ```bash
 npm run dev
 ```

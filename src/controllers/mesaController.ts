@@ -42,6 +42,9 @@ export async function mapaDeMesas(req: Request, res: Response) {
       status: { $ne: 'cancelado' }
     }).lean();
 
+    // só pinta de amarelo se a próxima reserva estiver dentro desta janela
+    const JANELA_RESERVADO_MS = 2 * 60 * 60_000;
+
     const mapa = mesas.map(m => {
       const reservasDaMesa = reservas.filter(r => r.numeroMesa === m.numero);
 
@@ -58,7 +61,9 @@ export async function mapaDeMesas(req: Request, res: Response) {
 
       let situacao: 'disponivel' | 'reservado' | 'ocupado' = 'disponivel';
       if (ativa) situacao = 'ocupado';
-      else if (proxima) situacao = 'reservado';
+      else if (proxima && (proxima.dataHora.getTime() - referencia.getTime()) <= JANELA_RESERVADO_MS) {
+        situacao = 'reservado';
+      }
 
       return {
         numero: m.numero,

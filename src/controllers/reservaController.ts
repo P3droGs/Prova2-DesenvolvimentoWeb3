@@ -94,7 +94,6 @@ export async function listarReservas(req: Request, res: Response) {
 
     if (cliente) filtro.nomeCliente = { $regex: String(cliente), $options: 'i' };
     if (mesa) filtro.numeroMesa = Number(mesa);
-    if (status) filtro.status = status;
 
     if (data) {
       const d = new Date(String(data));
@@ -106,7 +105,10 @@ export async function listarReservas(req: Request, res: Response) {
     }
 
     const reservas = await Reserva.find(filtro).sort({ dataHora: 1 }).lean();
-    res.json(reservas.map(projetarStatus));
+    let projetadas = reservas.map(projetarStatus);
+    // status é derivado em tempo real; pós-filtra para não divergir do exibido na UI
+    if (status) projetadas = projetadas.filter(r => r.status === status);
+    res.json(projetadas);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao listar reservas' });
   }
@@ -127,9 +129,14 @@ export async function atualizarReserva(req: Request, res: Response) {
     const reserva = await Reserva.findById(req.params.id);
     if (!reserva) return res.status(404).json({ erro: 'Reserva não encontrada' });
 
-    if (reserva.status === 'cancelado' || reserva.status === 'finalizado') {
+    const statusReal = calcularStatus(
+      reserva.dataHora,
+      reserva.duracaoMinutos ?? DURACAO_PADRAO,
+      reserva.status as StatusReserva
+    );
+    if (statusReal === 'cancelado' || statusReal === 'finalizado') {
       return res.status(409).json({
-        erro: `Não é possível editar uma reserva ${reserva.status}`
+        erro: `Não é possível editar uma reserva ${statusReal}`
       });
     }
 
@@ -152,8 +159,10 @@ export async function atualizarReserva(req: Request, res: Response) {
       return res.status(400).json({ erro: 'Data e hora inválidas' });
     }
 
-    // checa antecedência caso a data tenha mudado (com folga de 1 min)
-    if (dataHora && (novaData.getTime() - Date.now()) / 60_000 < ANTECEDENCIA_MIN - 1) {
+    // antecedência só vale quando a data realmente mudou — o form do front
+    // reenvia dataHora mesmo em edições só de nome/contato/observação
+    const dataMudou = dataHora && novaData.getTime() !== reserva.dataHora.getTime();
+    if (dataMudou && (novaData.getTime() - Date.now()) / 60_000 < ANTECEDENCIA_MIN - 1) {
       return res.status(400).json({
         erro: `A reserva precisa ter no mínimo ${ANTECEDENCIA_MIN} minutos de antecedência`
       });
@@ -201,8 +210,16 @@ export async function cancelarReserva(req: Request, res: Response) {
     const reserva = await Reserva.findById(req.params.id);
     if (!reserva) return res.status(404).json({ erro: 'Reserva não encontrada' });
 
-    if (reserva.status === 'finalizado') {
+    const statusReal = calcularStatus(
+      reserva.dataHora,
+      reserva.duracaoMinutos ?? DURACAO_PADRAO,
+      reserva.status as StatusReserva
+    );
+    if (statusReal === 'finalizado') {
       return res.status(409).json({ erro: 'Reserva já finalizada não pode ser cancelada' });
+    }
+    if (statusReal === 'cancelado') {
+      return res.status(409).json({ erro: 'Reserva já cancelada' });
     }
 
     reserva.status = 'cancelado';

@@ -1,7 +1,7 @@
 {
-  "name": "bistro-reservas",
+  "name": "mckingreservas",
   "version": "1.0.0",
-  "description": "Sistema de reservas de mesas para restaurante - Prova 2 DW3",
+  "description": "McKingReservas — Sistema de reservas de mesas para restaurante - Prova 2 DW3",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",

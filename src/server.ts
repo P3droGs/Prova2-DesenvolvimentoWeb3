@@ -36,6 +36,6 @@ app.use('/api', (_req, res) => res.status(404).json({ erro: 'Rota não encontrad
 (async () => {
   await conectarBanco(MONGO_URI);
   app.listen(PORT, () => {
-    console.log(`\n  Bistrô Reservas rodando em http://localhost:${PORT}\n`);
+    console.log(`\n  McKingReservas rodando em http://localhost:${PORT}\n`);
   });
 })();
