@@ -1,4 +1,4 @@
-# Bistrô das Mesas — Sistema de Reservas
+# MkReservas — Sistema de Reservas
 
 Sistema de reservas de mesas para restaurante desenvolvido em **TypeScript + Express + MongoDB (Mongoose)** com front-end em HTML/CSS/JS, incluindo **mapa visual interativo** das mesas.
 
